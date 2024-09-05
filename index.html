@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Margen para Café</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Margen para Café</h1>
+        <form id="calculoForm">
+            <div class="input-group">
+                <label>Precio del Pergamino (Soles/kg):</label>
+                <input type="number" step="0.01" id="precio_pergamino_kg" required>
+            </div>
+            <div class="input-group">
+                <label>Toneladas de Café Verde:</label>
+                <input type="number" step="0.01" id="toneladas_cafe_verde" required>
+            </div>
+            <div class="input-group">
+                <label>Costo de Procesamiento (Soles/tonelada):</label>
+                <input type="number" step="0.01" id="costo_procesamiento_tonelada" required>
+            </div>
+            <div class="input-group">
+                <label>Rendimiento Final (%):</label>
+                <input type="number" step="0.01" id="rendimiento_final" required>
+            </div>
+            <div class="input-group">
+                <label>Precio del Café Verde (USD/quintal):</label>
+                <input type="number" step="0.01" id="precio_cafe_verde_usd_quintal" required>
+            </div>
+            <div class="input-group">
+                <label>Tipo de Cambio (USD/Soles):</label>
+                <input type="number" step="0.01" id="tipo_cambio_usd_soles" required>
+            </div>
+            <button type="submit">Calcular</button>
+        </form>
+
+        <div id="resultados" class="resultados" style="display: none;">
+            <h2>Resultados:</h2>
+            <p><strong>Kilogramos de Pergamino Necesarios:</strong> <span id="kg_pergamino"></span> kg</p>
+            <p><strong>Costo Total del Café Pergamino:</strong> <span id="costo_total_pergamino"></span> soles</p>
+            <p><strong>Costo Total de Procesamiento:</strong> <span id="costo_total_procesamiento"></span> soles</p>
+            <p><strong>Costo por kg de Café Verde:</strong> <span id="costo_por_kg_cafe_verde"></span> soles</p>
+            <p><strong>Precio de Venta del Café Verde:</strong> <span id="precio_cafe_verde_soles_kg"></span> soles/kg</p>
+            <p><strong>Margen por kg de Café Verde:</strong> <span id="margen_por_kg"></span> soles</p>
+            <p><strong>Margen Total del Contrato:</strong> <span id="margen_total"></span> soles</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("calculoForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            // Obtener valores del formulario
+            let precioPergaminoKg = parseFloat(document.getElementById("precio_pergamino_kg").value);
+            let toneladasCafeVerde = parseFloat(document.getElementById("toneladas_cafe_verde").value);
+            let costoProcesamientoTonelada = parseFloat(document.getElementById("costo_procesamiento_tonelada").value);
+            let rendimientoFinal = parseFloat(document.getElementById("rendimiento_final").value) / 100;
+            let precioCafeVerdeUsdQuintal = parseFloat(document.getElementById("precio_cafe_verde_usd_quintal").value);
+            let tipoCambioUsdSoles = parseFloat(document.getElementById("tipo_cambio_usd_soles").value);
+
+            // Cálculos
+            let toneladasAKg = toneladasCafeVerde * 1000;
+            let kgPergaminoParaCafeVerde = toneladasAKg / rendimientoFinal;
+            let costoTotalPergamino = kgPergaminoParaCafeVerde * precioPergaminoKg;
+            let costoTotalProcesamiento = (toneladasAKg / 1000) * costoProcesamientoTonelada;
+            let costoTotal = costoTotalPergamino + costoTotalProcesamiento;
+            let costoPorKgCafeVerde = costoTotal / toneladasAKg;
+            let precioCafeVerdeSolesKg = (precioCafeVerdeUsdQuintal / 45.36) * tipoCambioUsdSoles;
+            let margenPorKg = precioCafeVerdeSolesKg - costoPorKgCafeVerde;
+            let margenTotal = margenPorKg * toneladasAKg;
+
+            // Mostrar resultados
+            document.getElementById("kg_pergamino").textContent = kgPergaminoParaCafeVerde.toFixed(2);
+            document.getElementById("costo_total_pergamino").textContent = costoTotalPergamino.toFixed(2);
+            document.getElementById("costo_total_procesamiento").textContent = costoTotalProcesamiento.toFixed(2);
+            document.getElementById("costo_por_kg_cafe_verde").textContent = costoPorKgCafeVerde.toFixed(2);
+            document.getElementById("precio_cafe_verde_soles_kg").textContent = precioCafeVerdeSolesKg.toFixed(2);
+            document.getElementById("margen_por_kg").textContent = margenPorKg.toFixed(2);
+            document.getElementById("margen_total").textContent = margenTotal.toFixed(2);
+
+            document.getElementById("resultados").style.display = "block";
+        });
+    </script>
+</body>
+</html>
